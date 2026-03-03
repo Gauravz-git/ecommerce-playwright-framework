@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright
 
 class DriverFactory:
     def __init__(self, browser="chromium", headless=False):
+        self.playwright = None
         self.browser_name = browser
         self.headless = headless
 
