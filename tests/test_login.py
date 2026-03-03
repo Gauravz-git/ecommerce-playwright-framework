@@ -1,15 +1,16 @@
-from utils.logger import get_logger
+from pytest_bdd import scenarios, given, when, then
 from pages.login_page import LoginPage
 
-logger = get_logger()
+scenarios("../features/login.feature")
 
-def test_successful_login(page):
-    logger.info("Starting login test")
-
+@given("user is on login page")
+def open_login(page):
     page.goto("https://www.saucedemo.com/")
 
-    login = LoginPage(page)
-    login.login("standard_user", "secret_sauce")
+@when("user enters valid credentials")
+def login(page):
+    LoginPage(page).login("standard_user", "secret_sauce")
 
-    logger.info("Login successful")
+@then("user should land on inventory page")
+def verify_login(page):
     assert "inventory" in page.url
