@@ -1,21 +1,15 @@
-def test_login_api_failure(page):
+from utils.logger import get_logger
+from pages.login_page import LoginPage
 
-    def mock_login_failure(route):
-        route.fulfill(
-            status=500,
-            content_type="application/json",
-            body='{"error":"Internal Server Error"}'
-        )
+logger = get_logger()
 
-    # Intercept login request
-    page.route("**/login*", mock_login_failure)
+def test_successful_login(page):
+    logger.info("Starting login test")
 
     page.goto("https://www.saucedemo.com/")
-    
-    from pages.login_page import LoginPage
-    login = LoginPage(page)
 
+    login = LoginPage(page)
     login.login("standard_user", "secret_sauce")
 
-    # Verify user stays on login page
-    assert "saucedemo" in page.url
+    logger.info("Login successful")
+    assert "inventory" in page.url
