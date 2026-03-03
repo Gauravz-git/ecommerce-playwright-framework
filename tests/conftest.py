@@ -1,15 +1,25 @@
 import pytest
-from playwright.sync_api import sync_playwright
+from core.driver_factory import DriverFactory
+
+
+def pytest_addoption(parser):
+    parser.addoption("--browser", action="store", default="chromium")
+    parser.addoption("--headed", action="store_true")
+    parser.addoption("--slow", action="store", default=0)
 
 
 @pytest.fixture(scope="function")
-def page():
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=False)
-        context = browser.new_context()
-        page = context.new_page()
+def page(request):
+    browser = request.config.getoption("--browser")
+    headed = request.config.getoption("--headed")
+    slow = int(request.config.getoption("--slow"))
 
-        yield page
+    driver = DriverFactory(
+        browser=browser,
+        headless=not headed,
+        slow_mo=slow
+    )
 
-        context.close()
-        browser.close()
+    page = driver.launch_browser()
+    yield page
+    driver.quit_browser()
